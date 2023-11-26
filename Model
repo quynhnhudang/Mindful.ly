@@ -1,0 +1,9 @@
+// TimeEntry.swift
+import Foundation
+
+struct TimeEntry {
+    var id: String?
+    var category: String
+    var duration: Double
+    var timestamp: Date
+}
