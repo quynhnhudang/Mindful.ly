@@ -1,0 +1,47 @@
+// ViewController.swift
+import UIKit
+
+class ViewController: UIViewController {
+    var viewModel = TimeEntryViewModel()
+
+    @IBOutlet weak var tableView: UITableView!
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Configure your table view and register custom cells if needed
+        tableView.delegate = self
+        tableView.dataSource = self
+
+        // Load existing time entries
+        viewModel.loadTimeEntries { error in
+            if let error = error {
+                print("Error loading time entries: \(error.localizedDescription)")
+            } else {
+                self.tableView.reloadData()
+            }
+        }
+    }
+
+    @IBAction func addTimeEntry(_ sender: UIButton) {
+        // Implement logic to allow the user to add time entries
+        viewModel.addTimeEntry(category: "Mindful Work", duration: 1.5) { error in
+            if let error = error {
+                print("Error adding time entry: \(error.localizedDescription)")
+            } else {
+                self.tableView.reloadData()
+            }
+        }
+    }
+}
+
+extension ViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return viewModel.entries.count
+    }
+
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TimeEntryCell", for: indexPath)
+        // Configure the cell with the data from viewModel.entries[indexPath.row]
+        return cell
+    }
+}
