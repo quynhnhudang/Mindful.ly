@@ -1,0 +1,41 @@
+// FirebaseManager.swift
+import Firebase
+
+class FirebaseManager {
+    static let shared = FirebaseManager()
+
+    private init() {}
+
+    let db = Firestore.firestore()
+
+    func addTimeEntry(_ entry: TimeEntry, completion: @escaping (Error?) -> Void) {
+        var data = [
+            "category": entry.category,
+            "duration": entry.duration,
+            "timestamp": entry.timestamp
+        ] as [String: Any]
+
+        if let id = entry.id {
+            data["id"] = id
+        }
+
+        db.collection("timeEntries").addDocument(data: data) { error in
+            completion(error)
+        }
+    }
+
+    func getTimeEntries(completion: @escaping ([TimeEntry]?, Error?) -> Void) {
+        db.collection("timeEntries").getDocuments { snapshot, error in
+            if let error = error {
+                completion(nil, error)
+            } else {
+                let entries = snapshot?.documents.compactMap { document in
+                    try? document.data(as: TimeEntry.self)
+                }
+                completion(entries, nil)
+            }
+        }
+    }
+
+    // Add more functions for updating and deleting time entries as needed.
+}
