@@ -1,0 +1,25 @@
+// TimeEntryViewModel.swift
+import Foundation
+
+class TimeEntryViewModel {
+    var entries: [TimeEntry] = []
+
+    func addTimeEntry(category: String, duration: Double, completion: @escaping (Error?) -> Void) {
+        let entry = TimeEntry(category: category, duration: duration, timestamp: Date())
+        FirebaseManager.shared.addTimeEntry(entry) { error in
+            if error == nil {
+                self.entries.append(entry)
+            }
+            completion(error)
+        }
+    }
+
+    func loadTimeEntries(completion: @escaping (Error?) -> Void) {
+        FirebaseManager.shared.getTimeEntries { entries, error in
+            if let entries = entries {
+                self.entries = entries
+            }
+            completion(error)
+        }
+    }
+}
